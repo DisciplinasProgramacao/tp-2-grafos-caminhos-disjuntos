@@ -1,6 +1,3 @@
-
-// Java program to find maximum number
-// of edge disjoint paths
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
@@ -11,32 +8,26 @@ import src.graph.Graph;
 
 public class Main {
 
-	// Number of vertices in given graph
+	//Numero de vertices em um dado grafo
 	static int V;
-
-	/*
-	 * Returns true if there is a path from
-	 * source 's' to sink 't' in residual graph.
-	 * Also fills parent[] to store the path
-	 */
 	/**
 	 * Cria um array de vertices visitados
 	 * e marca todos os vertices que ainda não foram visitados
 	 * @param rGraph matrix do grafo residual
 	 * @param s vertice de origem
 	 * @param t vertice de destino
-	 * @param parent array pai
+	 * @param anterior array pai
 	 * @return true ou false
 	 */
 	static boolean bfs(int rGraph[][], int s,
-			int t, int parent[]) {
+			int t, int anterior[]) {
 
 		V = rGraph.length;
-		boolean[] visited = new boolean[V];
+		boolean[] visitado = new boolean[V];
 		Queue<Integer> q = new LinkedList<>();
 		q.add(s);
-		visited[s] = true;
-		parent[s] = -1;
+		visitado[s] = true;
+		anterior[s] = -1;
 
 		
 		while (!q.isEmpty()) {
@@ -44,15 +35,15 @@ public class Main {
 			q.remove();
 
 			for (int v = 0; v < V; v++) {
-				if (visited[v] == false &&
+				if (visitado[v] == false &&
 						rGraph[u][v] > 0) {
 					q.add(v);
-					parent[v] = u;
-					visited[v] = true;
+					anterior[v] = u;
+					visitado[v] = true;
 				}
 			}
 		}
-		return (visited[t] == true);
+		return (visitado[t] == true);
 	}
 
 	/**
@@ -62,56 +53,38 @@ public class Main {
 	 * @param t
 	 * @return fluxo máximo
 	 */
-	static int findDisjointPaths(int graph[][], int s, int t) {
+	static int EncontrarCaminhosDisjuntos(int graph[][], int s, int t) {
 		V = graph.length;
 		int u, v;
 
-		// Create a residual graph and fill the
-		// residual graph with given capacities
-		// in the original graph as residual capacities
-		// in residual graph
-
-		// Residual graph where rGraph[i][j] indicates
-		// residual capacity of edge from i to j (if there
-		// is an edge. If rGraph[i][j] is 0, then there is not)
+		// Cria um grafo residual e preenche-o
+		// com capacidades fornecidas pelo grafo 
+		// original
 		int[][] rGraph = new int[V][V];
 		for (u = 0; u < V; u++)
 			for (v = 0; v < V; v++)
 				rGraph[u][v] = graph[u][v];
 
-		// This array is filled by BFS and to store path
-		int[] parent = new int[V];
 
-		int max_flow = 0; // There is no flow initially
+		int[] anterior = new int[V];
 
-		// Augment the flow while there is path
-		// from source to sink
-		while (bfs(rGraph, s, t, parent)) {
-			// Find minimum residual capacity of the edges
-			// along the path filled by BFS. Or we can say
-			// find the maximum flow through the path found.
-			int path_flow = Integer.MAX_VALUE;
+		int fluxo_maximo = 0; 
 
-			for (v = t; v != s; v = parent[v]) {
-				u = parent[v];
-				path_flow = Math.min(path_flow, rGraph[u][v]);
+		while (bfs(rGraph, s, t, anterior)) {
+			int fluxo_do_caminho = Integer.MAX_VALUE;
+
+			for (v = t; v != s; v = anterior[v]) {
+				u = anterior[v];
+				fluxo_do_caminho = Math.min(fluxo_do_caminho, rGraph[u][v]);
 			}
-
-			// update residual capacities of the edges and
-			// reverse edges along the path
-			for (v = t; v != s; v = parent[v]) {
-				u = parent[v];
-				rGraph[u][v] -= path_flow;
-				rGraph[v][u] += path_flow;
+			for (v = t; v != s; v = anterior[v]) {
+				u = anterior[v];
+				rGraph[u][v] -= fluxo_do_caminho;
+				rGraph[v][u] += fluxo_do_caminho;
 			}
-
-			// Add path flow to overall flow
-			max_flow += path_flow;
+			fluxo_maximo += fluxo_do_caminho;
 		}
-
-		// Return the overall flow (max_flow is equal to
-		// maximum number of edge-disjoint paths)
-		return max_flow;
+		return fluxo_maximo;
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -144,7 +117,7 @@ public class Main {
 			while (sc.hasNext()) {
 				int i = sc.nextInt();
 				int j = sc.nextInt();
-				String weight = sc.next();
+				String peso = sc.next(); // Não utilizado
 				graph.matrix[i - 1][j - 1] = 1;
 			}
 
@@ -153,7 +126,7 @@ public class Main {
 			
 
 			System.out.println(String.format("| %-20s | %-10s | %-10s | %-20s |", arquivosIntancias[instance],
-					origem+1, destino+1, findDisjointPaths(graph.matrix, origem, destino)));
+					origem+1, destino+1, EncontrarCaminhosDisjuntos(graph.matrix, origem, destino)));
 					
 		}
 	}
