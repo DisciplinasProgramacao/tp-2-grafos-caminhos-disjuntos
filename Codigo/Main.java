@@ -115,7 +115,7 @@ public class Main {
 		int origem = 0;
 		int destino = 0;
 		Graph graph;
-		int[] maxDistancesList = new int[40];
+		int[] maxDistancesList = new int[1];
 
 		for (int instance = 0; instance < maxDistancesList.length; instance++) {
 			// File file = new File("./instancias/elist"+(instance+1)+".txt");
@@ -143,7 +143,7 @@ public class Main {
 					" edge-disjoint paths from " +
 					origem + " to " + destino);
 		}
-		
+
 		// Let us create a graph shown in the above example
 		/*
 		 * int graph1[][] =

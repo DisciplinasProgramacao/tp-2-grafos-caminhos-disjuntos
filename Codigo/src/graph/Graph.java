@@ -9,8 +9,6 @@ import java.util.List;
 public class Graph {
     public int[][] matrix;
     public int n_vertices;
-    public int k_centers;
-    public int maxDistance = 0;
 
     public Graph(int n_vertices) {
         this.matrix = new int[n_vertices][n_vertices];
