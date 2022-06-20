@@ -1,7 +1,11 @@
 
 // Java program to find maximum number
 // of edge disjoint paths
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
+
+import src.graph.Graph;
 
 public class Main {
 
@@ -105,32 +109,69 @@ public class Main {
 	}
 
 	// Driver Code
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
+		int vertices = 0;
+		int arestas = 0;
+		int origem = 0;
+		int destino = 0;
+		Graph graph;
+		int[] maxDistancesList = new int[40];
+
+		for (int instance = 0; instance < maxDistancesList.length; instance++) {
+			// File file = new File("./instancias/elist"+(instance+1)+".txt");
+			File file = new File("./instancias/elist96d.rmf");
+			Scanner sc = new Scanner(file);
+
+			vertices = sc.nextInt();
+			arestas = sc.nextInt();
+			origem = sc.nextInt();
+			destino = sc.nextInt();
+			graph = new Graph(vertices);
+
+			while (sc.hasNext()) {
+				int i = sc.nextInt();
+				int j = sc.nextInt();
+				int weight = sc.nextInt();
+				graph.matrix[i - 1][j - 1] = 1;
+			}
+
+			// close scanner
+			sc.close();
+
+			System.out.println("There can be maximum " +
+					findDisjointPaths(graph.matrix, origem, destino) +
+					" edge-disjoint paths from " +
+					origem + " to " + destino);
+		}
+		
 		// Let us create a graph shown in the above example
-		int graph1[][] = { { 0, 1, 1, 1, 0, 0, 0, 0 },
-				{ 0, 0, 1, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 1, 0, 0, 1, 0 },
-				{ 0, 0, 0, 0, 0, 0, 1, 0 },
-				{ 0, 0, 1, 0, 0, 0, 0, 1 },
-				{ 0, 1, 0, 0, 0, 0, 0, 1 },
-				{ 0, 0, 0, 0, 0, 1, 0, 1 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0 } };
+		/*
+		 * int graph1[][] =
+		 * { { 0, 1, 1, 1, 0, 0, 0, 0 },
+		 * { 0, 0, 1, 0, 0, 0, 0, 0 },
+		 * { 0, 0, 0, 1, 0, 0, 1, 0 },
+		 * { 0, 0, 0, 0, 0, 0, 1, 0 },
+		 * { 0, 0, 1, 0, 0, 0, 0, 1 },
+		 * { 0, 1, 0, 0, 0, 0, 0, 1 },
+		 * { 0, 0, 0, 0, 0, 1, 0, 1 },
+		 * { 0, 0, 0, 0, 0, 0, 0, 0 } };
+		 * 
+		 * int graph2[][] = {
+		 * { 0, 1, 0, 1, 0, 0 },
+		 * { 0, 0, 0, 0, 1, 0 },
+		 * { 0, 0, 0, 0, 1, 1 },
+		 * { 0, 1, 0, 0, 1, 0 },
+		 * { 0, 0, 0, 1, 0, 0 },
+		 * { 0, 0, 0, 0, 0, 1 } };
+		 * 
+		 * int s = 0;
+		 * int t = 7;
+		 * 
+		 * int s2 = 0;
+		 * int t2 = 4;
+		 */
 
-		int graph2[][] = {
-				{ 0, 1, 0, 1, 0, 0 },
-				{ 0, 0, 0, 0, 1, 0 },
-				{ 0, 0, 0, 0, 1, 1 },
-				{ 0, 1, 0, 0, 1, 0 },
-				{ 0, 0, 0, 1, 0, 0 },
-				{ 0, 0, 0, 0, 0, 1 } };
-
-		int s = 0;
-		int t = 7;
-
-		int s2 = 0;
-		int t2 = 4;
-
-		System.out.println("There can be maximum " +
+		/*System.out.println("There can be maximum " +
 				findDisjointPaths(graph1, s, t) +
 				" edge-disjoint paths from " +
 				s + " to " + t);
@@ -138,7 +179,7 @@ public class Main {
 		System.out.println("There can be maximum " +
 				findDisjointPaths(graph2, s2, t2) +
 				" edge-disjoint paths from " +
-				s2 + " to " + t2);
+				s2 + " to " + t2);*/
 	}
 }
 
