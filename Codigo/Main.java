@@ -3,7 +3,9 @@
 // of edge disjoint paths
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
 
 import src.graph.Graph;
 
@@ -17,22 +19,26 @@ public class Main {
 	 * source 's' to sink 't' in residual graph.
 	 * Also fills parent[] to store the path
 	 */
+	/**
+	 * Cria um array de vertices visitados
+	 * e marca todos os vertices que ainda não foram visitados
+	 * @param rGraph matrix do grafo residual
+	 * @param s vertice de origem
+	 * @param t vertice de destino
+	 * @param parent array pai
+	 * @return true ou false
+	 */
 	static boolean bfs(int rGraph[][], int s,
 			int t, int parent[]) {
-		// Create a visited array and
-		// mark all vertices as not visited
 
 		V = rGraph.length;
 		boolean[] visited = new boolean[V];
-
-		// Create a queue, enqueue source vertex and
-		// mark source vertex as visited
 		Queue<Integer> q = new LinkedList<>();
 		q.add(s);
 		visited[s] = true;
 		parent[s] = -1;
 
-		// Standard BFS Loop
+		
 		while (!q.isEmpty()) {
 			int u = q.peek();
 			q.remove();
@@ -46,16 +52,16 @@ public class Main {
 				}
 			}
 		}
-
-		// If we reached sink in BFS
-		// starting from source, then
-		// return true, else false
 		return (visited[t] == true);
 	}
 
-	// Returns the maximum number of edge-disjoint
-	// paths from s to t. This function is copy of
-	// forFulkerson() discussed at http://goo.gl/wtQ4Ks
+	/**
+	 * Funcção de Ford Fulkerson 
+	 * @param graph
+	 * @param s
+	 * @param t
+	 * @return fluxo máximo
+	 */
 	static int findDisjointPaths(int graph[][], int s, int t) {
 		V = graph.length;
 		int u, v;
@@ -108,79 +114,47 @@ public class Main {
 		return max_flow;
 	}
 
-	// Driver Code
 	public static void main(String[] args) throws FileNotFoundException {
 		int vertices = 0;
 		int arestas = 0;
 		int origem = 0;
 		int destino = 0;
 		Graph graph;
-		int[] maxDistancesList = new int[1];
-
-		for (int instance = 0; instance < maxDistancesList.length; instance++) {
-			// File file = new File("./instancias/elist"+(instance+1)+".txt");
-			File file = new File("./instancias/elist96d.rmf");
+		String[] arquivosIntancias = {
+			"elist96d.rmf",
+			"elist160d.rmf",
+			"elist200d.rmf",
+			"elist500d.rmf",
+			"elist640d.rmf",
+			"elist960d.rmf",
+			"elist1440d.rmf"
+		};
+		System.out.println(String.format("| %-20s | %-10s | %-10s | %-20s |", "INSTÂNCIA",
+		"ORIGEM", "DESTINO", "CAMINHOS_DISJUNTOS"));
+		for (int instance = 0; instance < arquivosIntancias.length; instance++) {
+			File file = new File("./src/instancias/"+arquivosIntancias[instance]);
 			Scanner sc = new Scanner(file);
 
 			vertices = sc.nextInt();
 			arestas = sc.nextInt();
-			origem = sc.nextInt();
-			destino = sc.nextInt();
+			origem = sc.nextInt() - 1;
+			destino = sc.nextInt() - 1;
 			graph = new Graph(vertices);
-
+			
 			while (sc.hasNext()) {
 				int i = sc.nextInt();
 				int j = sc.nextInt();
-				int weight = sc.nextInt();
+				String weight = sc.next();
 				graph.matrix[i - 1][j - 1] = 1;
 			}
 
-			// close scanner
+			// fechar scanner
 			sc.close();
+			
 
-			System.out.println("There can be maximum " +
-					findDisjointPaths(graph.matrix, origem, destino) +
-					" edge-disjoint paths from " +
-					origem + " to " + destino);
+			System.out.println(String.format("| %-20s | %-10s | %-10s | %-20s |", arquivosIntancias[instance],
+					origem+1, destino+1, findDisjointPaths(graph.matrix, origem, destino)));
+					
 		}
-
-		// Let us create a graph shown in the above example
-		/*
-		 * int graph1[][] =
-		 * { { 0, 1, 1, 1, 0, 0, 0, 0 },
-		 * { 0, 0, 1, 0, 0, 0, 0, 0 },
-		 * { 0, 0, 0, 1, 0, 0, 1, 0 },
-		 * { 0, 0, 0, 0, 0, 0, 1, 0 },
-		 * { 0, 0, 1, 0, 0, 0, 0, 1 },
-		 * { 0, 1, 0, 0, 0, 0, 0, 1 },
-		 * { 0, 0, 0, 0, 0, 1, 0, 1 },
-		 * { 0, 0, 0, 0, 0, 0, 0, 0 } };
-		 * 
-		 * int graph2[][] = {
-		 * { 0, 1, 0, 1, 0, 0 },
-		 * { 0, 0, 0, 0, 1, 0 },
-		 * { 0, 0, 0, 0, 1, 1 },
-		 * { 0, 1, 0, 0, 1, 0 },
-		 * { 0, 0, 0, 1, 0, 0 },
-		 * { 0, 0, 0, 0, 0, 1 } };
-		 * 
-		 * int s = 0;
-		 * int t = 7;
-		 * 
-		 * int s2 = 0;
-		 * int t2 = 4;
-		 */
-
-		/*System.out.println("There can be maximum " +
-				findDisjointPaths(graph1, s, t) +
-				" edge-disjoint paths from " +
-				s + " to " + t);
-
-		System.out.println("There can be maximum " +
-				findDisjointPaths(graph2, s2, t2) +
-				" edge-disjoint paths from " +
-				s2 + " to " + t2);*/
 	}
 }
-
-// This code is contributed by PrinciRaj1992
