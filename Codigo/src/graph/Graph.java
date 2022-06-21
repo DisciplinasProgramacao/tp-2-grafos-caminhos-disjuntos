@@ -2,6 +2,7 @@ package src.graph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.List;
 public class Graph {
     public int[][] matrix;
     public int n_vertices;
+    public HashMap<Integer, Deque<Integer>> caminhos;
+    public int numCaminhos = 0;
 
     public Graph(int n_vertices) {
         this.matrix = new int[n_vertices][n_vertices];
@@ -23,5 +26,7 @@ public class Graph {
             }
         }
     }
+
+    
 
 }

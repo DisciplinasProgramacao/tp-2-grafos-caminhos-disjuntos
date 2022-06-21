@@ -1,5 +1,9 @@
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
@@ -8,19 +12,22 @@ import src.graph.Graph;
 
 public class Main {
 
-	//Numero de vertices em um dado grafo
+	// Numero de vertices em um dado grafo
 	static int V;
+	public static HashMap<Integer, Deque<Integer>> caminhos = new HashMap<>(V);
+	public static int numCaminhos = 0;
+
 	/**
-	 * Cria um array de vertices visitados
-	 * e marca todos os vertices que ainda não foram visitados
-	 * @param rGraph matrix do grafo residual
-	 * @param s vertice de origem
-	 * @param t vertice de destino
+	 * Cria um array de vertices visitados e marca todos os vertices que ainda não
+	 * foram visitados
+	 * 
+	 * @param rGraph   matrix do grafo residual
+	 * @param s        vertice de origem
+	 * @param t        vertice de destino
 	 * @param anterior array pai
 	 * @return true ou false
 	 */
-	static boolean bfs(int rGraph[][], int s,
-			int t, int anterior[]) {
+	static boolean bfs(int rGraph[][], int s, int t, int anterior[]) {
 
 		V = rGraph.length;
 		boolean[] visitado = new boolean[V];
@@ -29,25 +36,24 @@ public class Main {
 		visitado[s] = true;
 		anterior[s] = -1;
 
-		
 		while (!q.isEmpty()) {
 			int u = q.peek();
 			q.remove();
 
 			for (int v = 0; v < V; v++) {
-				if (visitado[v] == false &&
-						rGraph[u][v] > 0) {
+				if (visitado[v] == false && rGraph[u][v] > 0) {
 					q.add(v);
 					anterior[v] = u;
 					visitado[v] = true;
 				}
 			}
 		}
-		return (visitado[t] == true);
+		return visitado[t];
 	}
 
 	/**
-	 * Funcção de Ford Fulkerson 
+	 * Funcção de Ford Fulkerson
+	 * 
 	 * @param graph
 	 * @param s
 	 * @param t
@@ -58,17 +64,16 @@ public class Main {
 		int u, v;
 
 		// Cria um grafo residual e preenche-o
-		// com capacidades fornecidas pelo grafo 
+		// com capacidades fornecidas pelo grafo
 		// original
 		int[][] rGraph = new int[V][V];
 		for (u = 0; u < V; u++)
 			for (v = 0; v < V; v++)
 				rGraph[u][v] = graph[u][v];
 
-
 		int[] anterior = new int[V];
 
-		int fluxo_maximo = 0; 
+		int fluxo_maximo = 0;
 
 		while (bfs(rGraph, s, t, anterior)) {
 			int fluxo_do_caminho = Integer.MAX_VALUE;
@@ -82,9 +87,20 @@ public class Main {
 				rGraph[u][v] -= fluxo_do_caminho;
 				rGraph[v][u] += fluxo_do_caminho;
 			}
+			caminhos.put(numCaminhos++, getPath(anterior, t));
+
 			fluxo_maximo += fluxo_do_caminho;
 		}
 		return fluxo_maximo;
+	}
+
+	private static Deque<Integer> getPath(int parents[], int edge) {
+		Deque<Integer> path = new ArrayDeque<Integer>(V);
+		while (edge != -1) {
+			path.addFirst(edge);
+			edge = parents[edge];
+		}
+		return path;
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -94,18 +110,16 @@ public class Main {
 		int destino = 0;
 		Graph graph;
 		String[] arquivosIntancias = {
-			"elist96d.rmf",
-			"elist160d.rmf",
-			"elist200d.rmf",
-			"elist500d.rmf",
-			"elist640d.rmf",
-			"elist960d.rmf",
-			"elist1440d.rmf"
+				"elist96d.rmf",
+				"elist160d.rmf",
+				"elist200d.rmf",
+				"elist500d.rmf",
+				"elist640d.rmf",
+				"elist960d.rmf",
+				"elist1440d.rmf"
 		};
-		System.out.println(String.format("| %-20s | %-10s | %-10s | %-20s |", "INSTÂNCIA",
-		"ORIGEM", "DESTINO", "CAMINHOS_DISJUNTOS"));
 		for (int instance = 0; instance < arquivosIntancias.length; instance++) {
-			File file = new File("./src/instancias/"+arquivosIntancias[instance]);
+			File file = new File("./src/instancias/" + arquivosIntancias[instance]);
 			Scanner sc = new Scanner(file);
 
 			vertices = sc.nextInt();
@@ -113,7 +127,7 @@ public class Main {
 			origem = sc.nextInt() - 1;
 			destino = sc.nextInt() - 1;
 			graph = new Graph(vertices);
-			
+
 			while (sc.hasNext()) {
 				int i = sc.nextInt();
 				int j = sc.nextInt();
@@ -123,11 +137,17 @@ public class Main {
 
 			// fechar scanner
 			sc.close();
-			
 
-			System.out.println(String.format("| %-20s | %-10s | %-10s | %-20s |", arquivosIntancias[instance],
-					origem+1, destino+1, EncontrarCaminhosDisjuntos(graph.matrix, origem, destino)));
-					
+			System.out.println(String.format("\n\n| %-20s | %-10s | %-10s | %-20s |", "INSTÂNCIA",
+					"ORIGEM", "DESTINO", "CAMINHOS_DISJUNTOS"));
+			System.out.println(String.format("| %-20s | %-10s | %-10s | %-20s |\n", arquivosIntancias[instance],
+					origem + 1, destino + 1, EncontrarCaminhosDisjuntos(graph.matrix, origem, destino)));
+			System.out.println("CAMINHOS: \n" + caminhos);
+			caminhos.clear();
+			numCaminhos = 0;
+
 		}
+
 	}
+
 }
