@@ -1,0 +1,193 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%% Template de Artigo Adaptado para Trabalho de Diplomação do ICEI %%%%%%%%%%%%%%%%%%%%%%%%
+%% codificação UTF-8 - Abntex - Latex -  							     %%
+%% Autor:    Fábio Leandro Rodrigues Cordeiro  (fabioleandro@pucminas.br)                            %% 
+%% Co-autor: Prof. João Paulo Domingos Silva  e Harison da Silva                                     %%
+%% Revisores normas NBR (Padrão PUC Minas): Helenice Rego Cunha e Prof. Theldo Cruz                  %%
+%% Versão: 1.0     13 de março 2014                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\esp Introdução}
+
+O trabalho a seguir vai tratar da solução do problema da determinação do número máximo de caminhos disjuntos em arestas existentes em um grafo. Especificamente, um método de resolução que receba um grafo e um par de vértices de origem e destino, exibindo a quantidade de caminhos disjuntos em arestas entre os dois vértices dados, além de listar cada um dos caminhos encontrados.
+
+\section{\esp Desenvolvimento}
+
+
+As instâncias cujo os nomes terminam em “d”, indicam que se trata de um grafo direcionado
+
+\begin{table}[htb]
+	\centering
+	\caption{\hspace{0.1cm} Relação de instancias e quantidade de arestas}
+	\vspace{-0.3cm} % espaço entre titulo e tabela
+	\label{tab:tabela1}
+	% Conteúdo da tabela
+	\begin{tabular}{|c|c|}
+		\hline
+		\textbf{Instância} & \textbf{Numero de Arestas} \\
+		\hline
+             elist1440.rmf & 5397 \\ 
+             elist1440d.rmf & 22128 \\
+             elist160.rmf & 285 \\
+             elist160d.rmf & 912 \\
+             elist200.rmf & 483 \\
+             elist200d.rmf & 1340 \\
+             elist2560.rmf & 44160 \\
+             elist500.rmf & 1040 \\
+             elist500d.rmf & 3975 \\
+             elist640.rmf & 3037 \\
+             elist640d.rmf & 12608 \\
+             elist96.rmf & 187 \\
+             elist960.rmf & 2061 \\
+             elist960d.rmf & 9488 \\
+    \hline
+\end{tabular}
+	\vspace{.1cm}  %espaço entre tabela e fonte
+	\small
+	% Fonte
+	{\footnotesize\\ \textbf{Fonte: COUTO, 2022}}
+\end{table}
+
+
+Como instâncias de teste, foram utilizados grafos que originalmente foram gerados para processamento de fluxo máximo provenientes da OR Library. Em cada um dos arquivos existe um conjunto de dados nas primeiras linhas, que são metadados do grafo como número de vértices, número de arestas, vértice de origem e vértice de destino:
+\begin{table}[htb]
+	\centering
+	\caption{\hspace{0.1cm} Metadados das instancias}
+	\vspace{-0.3cm} % espaço entre titulo e tabela
+	\label{tab:tabela1}
+	% Conteúdo da tabela
+	\begin{tabular}{|c|c|}
+		\hline
+             n & Número de vértices \\ 
+             m & Número de arestas \\
+             s & Identificação do vértice de origem \\
+             t & Identificação do vértice de destino \\
+    \hline
+\end{tabular}
+	\vspace{.1cm}  %espaço entre tabela e fonte
+	\small
+	% Fonte
+	{\footnotesize\\ \textbf{Fonte: COUTO, 2022}}
+\end{table}
+
+As linhas seguintes descrevem as arestas e direções e peso entre os vértices como:
+
+\begin{table}[htb]
+	\centering
+	\caption{\hspace{0.1cm} Descrição dos dados da arestas na instância}
+	\vspace{-0.3cm} % espaço entre titulo e tabela
+	\label{tab:tabela1}
+	% Conteúdo da tabela
+	\begin{tabular}{|c|c|c|}
+		\hline
+		\textbf{v} & \textbf{w} & \textbf{cap} \\
+		\hline
+Vértice de origem & Vértice de destino & Peso da aresta\\
+    \hline
+\end{tabular}
+	\vspace{.1cm}  %espaço entre tabela e fonte
+	\small
+	% Fonte
+	{\footnotesize\\ \textbf{Fonte: COUTO, 2022}}
+\end{table}
+
+Para os objetivos do trabalho, os pesos das atribuídos as arestas são irrelevantes para a solução final, por isso, apesar dos valores serem lidos, não são levados em consideração no processamento.
+
+Para o processamento da solução foi escolhida a linguagem Java como ferramenta principal, com ela foi escrito um único programa que utiliza uma classe principal \textit{Main} desenvolvida para instanciar e armazenar os atributos do grafo de maneira estática para cada instância. As arestas e seus custos foram dispostos em uma matriz simétrica de números inteiros cuja quantidade de linhas e colunas é a mesma do número de vértices.
+
+A solução utilizada foi uma variação da implementação de \textit{Edmonds-Karp} do método de \textit{Ford-Fulkerson} para se calcular o fluxo máximo em uma rede de fluxo. Ao calcular o fluxo máximo da aresta de origem até a de destino é possível encontrar o número máximo de caminhos disjuntos das arestas.
+
+
+
+
+
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=none,
+  language=Java,
+  aboveskip=1mm,
+  belowskip=1mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\begin{algorithm}
+\caption{Encontrar Caminhos Disjuntos com o algoritmo de Ford-Fulkerson}
+\begin{lstlisting}
+static int EncontrarCaminhosDisjuntos(int graph[][], int s, int t) {
+		V = graph.length;
+		int u, v;
+		int[][] rGraph = new int[V][V];
+		for (u = 0; u < V; u++)
+			for (v = 0; v < V; v++)
+				rGraph[u][v] = graph[u][v];
+		int[] anterior = new int[V];
+		int fluxo_maximo = 0;
+		while (bfs(rGraph, s, t, anterior)) {
+			int fluxo_do_caminho = Integer.MAX_VALUE;
+			for (v = t; v != s; v = anterior[v]) {
+				u = anterior[v];
+				fluxo_do_caminho = Math.min(fluxo_do_caminho, rGraph[u][v]);
+			}
+			for (v = t; v != s; v = anterior[v]) {
+				u = anterior[v];
+				rGraph[u][v] -= fluxo_do_caminho;
+				rGraph[v][u] += fluxo_do_caminho;
+			}
+			caminhos.put(numCaminhos++, getPath(anterior, t));
+			fluxo_maximo += fluxo_do_caminho;
+		}
+		return fluxo_maximo;
+	}
+	
+\end{lstlisting}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Marcação de vertices já visitados}
+\begin{lstlisting}
+    static boolean bfs(int rGraph[][], int s, int t, int anterior[]) {
+
+		V = rGraph.length;
+		boolean[] visitado = new boolean[V];
+		Queue<Integer> q = new LinkedList<>();
+		q.add(s);
+		visitado[s] = true;
+		anterior[s] = -1;
+
+		while (!q.isEmpty()) {
+			int u = q.peek();
+			q.remove();
+
+			for (int v = 0; v < V; v++) {
+				if (visitado[v] == false && rGraph[u][v] > 0) {
+					q.add(v);
+					anterior[v] = u;
+					visitado[v] = true;
+				}
+			}
+		}
+		return visitado[t];
+	}
+	
+\end{lstlisting}
+\end{algorithm}
+
+
+\section{\esp Conclusão}
+Ao se utilizar uma solução baseada no algoritmo de \textit{Edmonds-Karp}, cuja complexidade de tempo do pior caso é \(O(|V| |E|^3)\), a solução entrega informações como a quantidade de caminhos disjuntos para cada instância e regista os caminhos em um \textit{HashSet} da biblioteca java. 
+
+% \subsection{\esp Trabalhos futuros}
+% 
+% Sugestões de estudos posteriores são ser adicionados subseção deste capítulo de conclusão.
